@@ -1,10 +1,11 @@
 {
   "name": "test-electron",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "build": "rimraf dist && electron-builder"
+    "build": "rimraf dist && electron-builder",
+    "test-deeplink": "http-server integration/deeplink -c-1"
   },
   "keywords": [],
   "author": {
@@ -20,6 +21,7 @@
   "devDependencies": {
     "electron": "^31.3.0",
     "electron-builder": "^24.13.3",
+    "http-server": "^14.1.1",
     "rimraf": "^6.0.1"
   },
   "build": {
@@ -35,7 +37,7 @@
       "package.json"
     ],
     "win": {
-      "icon": "icons/icon.ico",
+      "icon": "src/icons/icon.ico",
       "target": [
         "nsis",
         "portable"
@@ -47,17 +49,19 @@
       "allowToChangeInstallationDirectory": true
     },
     "mac": {
-      "icon": "icons/icon.icns",
+      "icon": "src/icons/icon.icns",
       "target": "dmg",
       "protocols": [
         {
           "name": "MyApp",
-          "schemes": ["myapp"]
+          "schemes": [
+            "myapp"
+          ]
         }
       ]
     },
     "linux": {
-      "icon": "icons/icon.png",
+      "icon": "src/icons/icon.png",
       "target": [
         "AppImage",
         "deb"
