@@ -1,8 +1,10 @@
 const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
 
+let mainWindow;
+
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -18,13 +20,12 @@ function createWindow() {
 app.whenReady().then(() => {
   protocol.registerFileProtocol('myapp', (request, callback) => {
     const url = request.url.substr(7); // strip off "myapp://"
-    callback({ path: path.normalize(`${__dirname}/${url}`) });
+    const filePath = path.join(__dirname, url.split('?')[0]);
+    callback({ path: path.normalize(filePath) });
   });
 
-  // Register the custom URL scheme for macOS
-  if (process.platform === 'darwin') {
-    app.setAsDefaultProtocolClient('myapp');
-  }
+  // Register the custom URL scheme for all platforms
+  app.setAsDefaultProtocolClient('myapp');
 
   createWindow();
 
@@ -38,22 +39,7 @@ app.whenReady().then(() => {
 // Handle the protocol URL
 app.on('open-url', (event, url) => {
   event.preventDefault();
-  console.log('open-url event', url);
-  const mainWindow = BrowserWindow.getAllWindows()[0];
-  if (mainWindow) {
-    mainWindow.loadURL(url);
-  }
-});
-
-// Register the custom URL scheme for Windows and Linux
-if (process.platform === 'win32' || process.platform === 'linux') {
-  app.setAsDefaultProtocolClient('myapp');
-}
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  handleOpenUrl(url);
 });
 
 // Handle second instance for Windows and Linux
@@ -67,11 +53,24 @@ if (!gotTheLock) {
     if (process.platform === 'win32') {
       const url = argv.find(arg => arg.startsWith('myapp://'));
       if (url) {
-        const mainWindow = BrowserWindow.getAllWindows()[0];
-        if (mainWindow) {
-          mainWindow.loadURL(url);
-        }
+        handleOpenUrl(url);
       }
     }
   });
 }
+
+function handleOpenUrl(url) {
+  const urlObj = new URL(url);
+  const accessToken = urlObj.searchParams.get('access_token');
+  console.log('Access Token:', accessToken);
+
+  if (mainWindow) {
+    mainWindow.loadURL(`myapp://index.html?access_token=${accessToken}`);
+  }
+}
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
