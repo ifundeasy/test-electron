@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, protocol } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -7,13 +7,20 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-    },
+      nodeIntegration: true,
+      contextIsolation: false
+    }
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadURL('myapp://index.html');
 }
 
 app.whenReady().then(() => {
+  protocol.registerFileProtocol('myapp', (request, callback) => {
+    const url = request.url.substr(7); // strip off "myapp://"
+    callback({ path: path.normalize(`${__dirname}/${url}`) });
+  });
+
   createWindow();
 
   app.on('activate', () => {

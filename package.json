@@ -4,23 +4,27 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "rm -rf dist && electron-builder"
+    "build": "rimraf dist && electron-builder"
   },
   "keywords": [],
   "author": {
     "name": "Afa",
     "email": "ifundeasy@gmail.com"
   },
-  "homepage": "https://my-electron.com",
+  "homepage": "https://myapp.com",
   "license": "ISC",
-  "description": "",
+  "description": "This is a sample Electron application.",
+  "engines": {
+    "node": ">=20.15.1"
+  },
   "devDependencies": {
     "electron": "^31.3.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "rimraf": "^6.0.1"
   },
   "build": {
     "appId": "com.example.myapp",
-    "productName": "MyElectronApp",
+    "productName": "MyApp",
     "directories": {
       "output": "dist"
     },
@@ -52,7 +56,8 @@
         "AppImage",
         "deb"
       ],
-      "category": "Utility"
+      "category": "Utility",
+      "maintainer": "Afa <ifundeasy@gmail.com>"
     }
   }
 }
