@@ -21,6 +21,11 @@ app.whenReady().then(() => {
     callback({ path: path.normalize(`${__dirname}/${url}`) });
   });
 
+  // Register the custom URL scheme for macOS
+  if (process.platform === 'darwin') {
+    app.setAsDefaultProtocolClient('myapp');
+  }
+
   createWindow();
 
   app.on('activate', () => {
@@ -30,8 +35,43 @@ app.whenReady().then(() => {
   });
 });
 
+// Handle the protocol URL
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  console.log('open-url event', url);
+  const mainWindow = BrowserWindow.getAllWindows()[0];
+  if (mainWindow) {
+    mainWindow.loadURL(url);
+  }
+});
+
+// Register the custom URL scheme for Windows and Linux
+if (process.platform === 'win32' || process.platform === 'linux') {
+  app.setAsDefaultProtocolClient('myapp');
+}
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
+
+// Handle second instance for Windows and Linux
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, argv, workingDirectory) => {
+    // On Windows, handle the protocol URL
+    if (process.platform === 'win32') {
+      const url = argv.find(arg => arg.startsWith('myapp://'));
+      if (url) {
+        const mainWindow = BrowserWindow.getAllWindows()[0];
+        if (mainWindow) {
+          mainWindow.loadURL(url);
+        }
+      }
+    }
+  });
+}

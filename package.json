@@ -48,7 +48,13 @@
     },
     "mac": {
       "icon": "icons/icon.icns",
-      "target": "dmg"
+      "target": "dmg",
+      "protocols": [
+        {
+          "name": "MyApp",
+          "schemes": ["myapp"]
+        }
+      ]
     },
     "linux": {
       "icon": "icons/icon.png",
