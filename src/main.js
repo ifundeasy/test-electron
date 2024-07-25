@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol } = require('electron');
+const { app, BrowserWindow, protocol, ipcMain } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -9,8 +9,8 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true
     }
   });
 
@@ -66,6 +66,8 @@ function handleOpenUrl(url) {
 
   if (mainWindow) {
     mainWindow.loadURL(`myapp://index.html?access_token=${accessToken}`);
+    // Send the token to the renderer process
+    mainWindow.webContents.send('fromMain', accessToken);
   }
 }
 
@@ -73,4 +75,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+ipcMain.on('toMain', (event, accessToken) => {
+  console.log('Received from renderer:', accessToken);
 });

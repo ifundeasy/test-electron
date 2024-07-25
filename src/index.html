@@ -17,7 +17,14 @@
       const accessToken = urlParams.get('access_token');
       if (accessToken) {
         document.getElementById('token').textContent = `Access Token: ${accessToken}`;
+        // Send the token to the main process
+        window.electronAPI.sendToMain('toMain', accessToken);
       }
+
+      // Receive data from the main process
+      window.electronAPI.receiveFromMain('fromMain', (data) => {
+        console.log('Received from main:', data);
+      });
     </script>
   </body>
 </html>

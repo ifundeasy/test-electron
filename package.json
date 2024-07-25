@@ -31,9 +31,7 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
-      "index.html",
-      "profile.html",
+      "src/**",
       "package.json"
     ],
     "win": {
