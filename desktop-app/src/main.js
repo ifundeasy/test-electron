@@ -38,6 +38,7 @@ app.whenReady().then(() => {
 
 // Handle the protocol URL
 app.on('open-url', (event, url) => {
+  console.log('opening via browser ->', url)
   event.preventDefault();
   handleOpenUrl(url);
 });
@@ -76,6 +77,7 @@ ipcMain.on('toMain', (event, accessToken) => {
 });
 
 ipcMain.on('open-url', (event, url) => {
+  console.log(url)
   shell.openExternal(url);
 });
 

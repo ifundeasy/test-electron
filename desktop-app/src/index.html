@@ -88,7 +88,7 @@
       // Handle form submission
       document.getElementById('modalForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const host = document.getElementById('host');
+        const host = document.getElementById('host').value;
         const clientId = document.getElementById('client_id').value;
 
         // Construct URL (example: https://google.com)
