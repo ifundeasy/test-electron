@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, ipcMain } = require('electron');
+const { app, BrowserWindow, protocol, ipcMain, shell } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -71,12 +71,16 @@ function handleOpenUrl(url) {
   }
 }
 
+ipcMain.on('toMain', (event, accessToken) => {
+  console.log('Received from renderer:', accessToken);
+});
+
+ipcMain.on('open-url', (event, url) => {
+  shell.openExternal(url);
+});
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
-});
-
-ipcMain.on('toMain', (event, accessToken) => {
-  console.log('Received from renderer:', accessToken);
 });

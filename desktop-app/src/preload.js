@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 // Expose a limited API to the renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
   sendToMain: (channel, data) => {
-    let validChannels = ['toMain'];
+    let validChannels = ['toMain', 'open-url'];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }

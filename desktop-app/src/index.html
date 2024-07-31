@@ -2,12 +2,105 @@
 <html>
   <head>
     <title>Home</title>
+    <style>
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <h1>Home Page</h1>
     <p id="token"></p>
     <button id="goToProfile">Go to My Profile</button>
+    <button id="loginViaBrowser">Login</button>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="modalForm">
+          <label for="host">Host:</label>
+          <input type="text" id="host" name="host"><br><br>
+          <label for="client_id">Client ID:</label>
+          <input type="text" id="client_id" name="client_id"><br><br>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+
     <script>
+      // Modal logic
+      var modal = document.getElementById("myModal");
+      var goToProfile = document.getElementById("goToProfile");
+      var loginViaBrowser = document.getElementById("loginViaBrowser");
+      var registerViaBrowser = document.getElementById("registerViaBrowser");
+      var span = document.getElementsByClassName("close")[0];
+
+      goToProfile.style.display = "none"
+
+      loginViaBrowser.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      // Handle form submission
+      document.getElementById('modalForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const host = document.getElementById('host');
+        const clientId = document.getElementById('client_id').value;
+
+        // Construct URL (example: https://google.com)
+        const url = `${host}?client_id=${clientId}&redirect_app=myapp://index.html`;
+
+        // Send the URL to the main process to open in the default browser
+        window.electronAPI.sendToMain('open-url', url);
+
+        modal.style.display = "none";
+      });
+
+      // Navigation logic
       document.getElementById('goToProfile').addEventListener('click', () => {
         window.location.href = 'myapp://profile.html';
       });
@@ -16,6 +109,8 @@
       const urlParams = new URLSearchParams(window.location.search);
       const accessToken = urlParams.get('access_token');
       if (accessToken) {
+        loginViaBrowser.style.display = "none"
+        goToProfile.style.display = "block"
         document.getElementById('token').textContent = `Access Token: ${accessToken}`;
         // Send the token to the main process
         window.electronAPI.sendToMain('toMain', accessToken);
